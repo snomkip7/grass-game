@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjkl4oeujp1tb"]
+
+[ext_resource type="Texture2D" uid="uid://bo58kyeerbqst" path="res://icon.svg" id="1_mrji1"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_xu4ck"]
+radius = 2.0
+height = 28.0
+
+[node name="GrassRopeSegment" type="RigidBody2D"]
+
+[node name="SegmentCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_xu4ck")
+
+[node name="SegmentSprite" type="Sprite2D" parent="."]
+modulate = Color(0, 0.658824, 0.0784314, 1)
+scale = Vector2(0.03125, 0.21875)
+texture = ExtResource("1_mrji1")

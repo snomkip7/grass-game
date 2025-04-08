@@ -1,0 +1,84 @@
+[gd_scene load_steps=4 format=3 uid="uid://cfbklw6qnbxcw"]
+
+[ext_resource type="Texture2D" uid="uid://bo58kyeerbqst" path="res://icon.svg" id="1_rvv1n"]
+[ext_resource type="PackedScene" uid="uid://cjkl4oeujp1tb" path="res://grassRopeSegment.tscn" id="2_xkvjr"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_8hep3"]
+radius = 5.0
+
+[node name="GrassRope" type="Node2D"]
+
+[node name="GrassRopeConnector" type="StaticBody2D" parent="."]
+
+[node name="ConnectorCollision" type="CollisionShape2D" parent="GrassRopeConnector"]
+shape = SubResource("CircleShape2D_8hep3")
+
+[node name="ConnectorSprite" type="Sprite2D" parent="GrassRopeConnector"]
+modulate = Color(0, 0.45098, 0.0117647, 1)
+scale = Vector2(0.078125, 0.078125)
+texture = ExtResource("1_rvv1n")
+
+[node name="GrassJoint" type="PinJoint2D" parent="."]
+position = Vector2(0, 5)
+scale = Vector2(1, 1)
+node_a = NodePath("../GrassRopeConnector")
+node_b = NodePath("../GrassRopeSegment1")
+softness = 0.2
+
+[node name="GrassRopeSegment1" parent="." instance=ExtResource("2_xkvjr")]
+position = Vector2(0, 19)
+
+[node name="GrassJoint2" type="PinJoint2D" parent="."]
+position = Vector2(0, 33)
+node_a = NodePath("../GrassRopeSegment1")
+node_b = NodePath("../GrassRopeSegment2")
+softness = 0.2
+
+[node name="GrassRopeSegment2" parent="." instance=ExtResource("2_xkvjr")]
+position = Vector2(0, 47)
+
+[node name="GrassJoint3" type="PinJoint2D" parent="."]
+position = Vector2(0, 61)
+node_a = NodePath("../GrassRopeSegment2")
+node_b = NodePath("../GrassRopeSegment3")
+bias = 0.9
+softness = 0.2
+
+[node name="GrassRopeSegment3" parent="." instance=ExtResource("2_xkvjr")]
+position = Vector2(0, 75)
+
+[node name="GrassJoint4" type="PinJoint2D" parent="."]
+position = Vector2(0, 89)
+node_a = NodePath("../GrassRopeSegment3")
+node_b = NodePath("../GrassRopeSegment4")
+softness = 0.2
+
+[node name="GrassRopeSegment4" parent="." instance=ExtResource("2_xkvjr")]
+position = Vector2(0, 103)
+
+[node name="GrassJoint5" type="PinJoint2D" parent="."]
+position = Vector2(0, 117)
+node_a = NodePath("../GrassRopeSegment4")
+node_b = NodePath("../GrassRopeSegment5")
+softness = 0.2
+
+[node name="GrassRopeSegment5" parent="." instance=ExtResource("2_xkvjr")]
+position = Vector2(0, 131)
+
+[node name="GrassJoint6" type="PinJoint2D" parent="."]
+position = Vector2(0, 145)
+node_a = NodePath("../GrassRopeSegment5")
+node_b = NodePath("../GrassRopeSegment6")
+softness = 0.2
+
+[node name="GrassRopeSegment6" parent="." instance=ExtResource("2_xkvjr")]
+position = Vector2(0, 159)
+
+[node name="GrassJoint7" type="PinJoint2D" parent="."]
+position = Vector2(0, 173)
+node_a = NodePath("../GrassRopeSegment6")
+node_b = NodePath("../GrassRopeSegment7")
+softness = 0.2
+
+[node name="GrassRopeSegment7" parent="." instance=ExtResource("2_xkvjr")]
+position = Vector2(0, 187)

@@ -20,12 +20,12 @@ shape = SubResource("RectangleShape2D_sjd0v")
 scale = Vector2(4.5625, 1)
 texture = ExtResource("1_ucvuo")
 
+[node name="Player" parent="." instance=ExtResource("3_04mkq")]
+position = Vector2(215, 421)
+
 [node name="GrassRope" parent="." instance=ExtResource("2_tmhvu")]
 position = Vector2(500, 183)
 rotation = -0.598648
-
-[node name="Player" parent="." instance=ExtResource("3_04mkq")]
-position = Vector2(215, 421)
 
 [node name="Platform2" type="StaticBody2D" parent="."]
 position = Vector2(564, 580)

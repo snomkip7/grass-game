@@ -18,15 +18,19 @@ public partial class Player : CharacterBody2D
 	private float dashSpeed = 450;
 	private float pushStrength = 100;
 	private float coyoteTime = 10;
+	private bool swinging = false;
+	private float swingTimer = .3f;
+	private bool movementPaused = false;
+	private float movementPauseTimer = 0;
+	private RigidBody2D swingPoint;
 
 	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
+	public override void _Ready(){
+
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _PhysicsProcess(double delta)
-	{
+	public override void _PhysicsProcess(double delta){
 		if(dashing&&IsOnWall()){
 			dashing = false;
 		}
@@ -37,8 +41,13 @@ public partial class Player : CharacterBody2D
 			} else{
 				direction = 1;
 			}
-			Velocity = Velocity.Lerp(new Vector2(speed*direction,Velocity.Y), acceleration);
-		} else if(!dashing){
+			if(swinging){
+				Velocity = Velocity.Lerp(new Vector2(speed/10*direction,Velocity.Y), acceleration);
+			} else{
+				Velocity = Velocity.Lerp(new Vector2(speed*direction,Velocity.Y), acceleration);
+			}
+			
+		} else if(!dashing && !movementPaused){
 			Velocity = Velocity.Lerp(new Vector2(0,Velocity.Y), acceleration);
 		}
 
@@ -46,25 +55,29 @@ public partial class Player : CharacterBody2D
 			if(coyoteTime>0){
 				coyoteTime -=1;
 			}
-			if(Input.IsActionPressed("jump")&&jumping&&jumpTimer>0&&!dashing){
+			if(Input.IsActionPressed("jump")&&jumping&&jumpTimer>0&&!dashing&&!movementPaused){
 				Velocity = new Vector2(Velocity.X,Velocity.Y+Velocity.Y*(float)delta*(jumpTimer/jumpLength));
 			} else{
 				if(!dashing){
-					if(jumping){
+					if(jumping&&!movementPaused){
 						jumping = false;
 						Velocity = new Vector2(Velocity.X,Velocity.Y/1.5f);
 					}
+
 					Velocity = new Vector2(Velocity.X,Velocity.Y+gravity*(float)delta);
-				}
-				if(coyoteTime >0 && !jumping){
-					if(Input.IsActionJustPressed("jump")){
-						Velocity = new Vector2(Velocity.X,Velocity.Y+jumpSpeed);
-						jumping = true;
-						jumpTimer = jumpLength;
+					
+					if(Velocity.Y>10 && swinging){
+						Velocity = new Vector2(Velocity.X,10);
 					}
+					
+				}
+				if(coyoteTime >0 && !jumping && Input.IsActionJustPressed("jump")){
+					Velocity = new Vector2(Velocity.X,Velocity.Y+jumpSpeed);
+					jumping = true;
+					jumpTimer = jumpLength;
 				}
 			} 
-		} else if(!dashing){
+		} else if(!dashing && !movementPaused){
 			Velocity = new Vector2(Velocity.X,0);
 			coyoteTime = 12;
 			if(Input.IsActionJustPressed("jump")){
@@ -73,12 +86,13 @@ public partial class Player : CharacterBody2D
 				jumpTimer = jumpLength;
 			}
 		}
+
 		if(IsOnCeiling()){
 			jumping = false;
 			Velocity = new Vector2(Velocity.X,Velocity.Y/1.5f);
 		}
 
-		if(Input.IsActionJustPressed("dash") && dashTimer==0){
+		if(Input.IsActionJustPressed("dash") && dashTimer==0 && !swinging){
 			Velocity = new Vector2((speed+dashSpeed)*direction,0);
 			dashing = true;
 			dashTimer = dashCooldown;
@@ -97,9 +111,50 @@ public partial class Player : CharacterBody2D
 			else if(dashTimer < 0){
 				dashTimer = 0;
 			}
-		}		
+		}
 
-		MoveAndSlide();
+		if(movementPaused){
+			movementPauseTimer -= (float)delta;
+			if(movementPauseTimer<=0){
+				movementPaused = false;
+				acceleration = .2f;
+			}
+		}
+
+		if(Input.IsActionJustPressed("grapple")){
+			swinging = true;
+			jumping = false;
+			Velocity = Vector2.Zero;
+			swingTimer = .08f;
+			// shoot out thing but thats a later problem
+			swingPoint = GetNode<RigidBody2D>("../GrassRope/SwingPoint");
+		}
+
+		if(swinging){
+			GlobalPosition = swingPoint.GlobalPosition;
+			if(swingTimer<=0){
+				Vector2 newVelocity = Velocity;
+				if(Velocity.Y > 200){
+					newVelocity = new Vector2(100*direction, 100);
+				}
+				swingPoint.LinearVelocity += newVelocity;
+				swingTimer = .08f;
+			}
+			swingTimer-=(float)delta;
+			if(Input.IsActionJustPressed("jump")){ // dismount
+				swinging = false;
+				Velocity = new Vector2(swingPoint.LinearVelocity.X * 1.5f, swingPoint.LinearVelocity.Y * 1.17f);
+				movementPaused = true;
+				movementPauseTimer = .75f;
+				acceleration = .05f;
+				jumping = false;
+			}
+			coyoteTime = 0;
+		}
+		else{
+			MoveAndSlide();
+		}
+		
 
 		for (int i = GetSlideCollisionCount()-1; i>=0; i--){
 			GodotObject collision = GetSlideCollision(i).GetCollider();

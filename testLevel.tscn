@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://cygi4db3yudkq"]
 
 [ext_resource type="Texture2D" uid="uid://bo58kyeerbqst" path="res://icon.svg" id="1_ucvuo"]
-[ext_resource type="PackedScene" uid="uid://cfbklw6qnbxcw" path="res://grassRope.tscn" id="2_tmhvu"]
 [ext_resource type="PackedScene" uid="uid://cbwn43jsfjo0t" path="res://player.tscn" id="3_04mkq"]
+[ext_resource type="PackedScene" uid="uid://du5osuj8lpb36" path="res://shroom.tscn" id="4_l6o24"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sjd0v"]
 size = Vector2(584, 128)
@@ -21,15 +21,11 @@ scale = Vector2(4.5625, 1)
 texture = ExtResource("1_ucvuo")
 
 [node name="Player" parent="." instance=ExtResource("3_04mkq")]
-position = Vector2(215, 421)
-
-[node name="GrassRope" parent="." instance=ExtResource("2_tmhvu")]
-position = Vector2(500, 183)
-rotation = -0.598648
+position = Vector2(226, 422)
 
 [node name="Platform2" type="StaticBody2D" parent="."]
-position = Vector2(564, 580)
-scale = Vector2(1.54, 0.63)
+position = Vector2(207, 575)
+scale = Vector2(2.86, 0.63)
 metadata/_edit_group_ = true
 
 [node name="PlatformCollision" type="CollisionShape2D" parent="Platform2"]
@@ -50,3 +46,9 @@ shape = SubResource("RectangleShape2D_sjd0v")
 [node name="PlatformSprite" type="Sprite2D" parent="Platform3"]
 scale = Vector2(4.5625, 1)
 texture = ExtResource("1_ucvuo")
+
+[node name="Shroom" parent="." instance=ExtResource("4_l6o24")]
+position = Vector2(52, 295)
+
+[node name="Shroom2" parent="." instance=ExtResource("4_l6o24")]
+position = Vector2(1281, 264)

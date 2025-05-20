@@ -3,7 +3,7 @@ using System;
 
 public partial class Player : CharacterBody2D
 {
-	private float speed = 250;
+	private float speed = 400;
 	private float direction = 1;
 	private float acceleration = .2f;
 	private float gravity = 1200;
@@ -20,13 +20,36 @@ public partial class Player : CharacterBody2D
 	private float coyoteTime = 10;
 	private bool swinging = false;
 	private float swingTimer = .3f;
+	private float swingSpeed = 250;
 	private bool movementPaused = false;
 	private float movementPauseTimer = 0;
 	private RigidBody2D swingPoint;
+	private AnimatedSprite2D mainSprite;
+	private AnimatedSprite2D partSprite;
+	private bool attacking = false;
+	private float attackTimer = .4f;
+	private Area2D sword;
+	private int health = 100;
+	private bool animation = false;
+	private CanvasModulate screenColor;
+	private PackedScene ropeScene;
+	private grassRope currentRope = null;
+	private PackedScene ropeShoot;
+	public bool shotRope = false;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready(){
+		mainSprite = GetNode<AnimatedSprite2D>("PlayerMainSprite");
+		mainSprite.Play("default");
 
+		partSprite = GetNode<AnimatedSprite2D>("PlayerPartSprite");
+		partSprite.Play("default");
+
+		sword = GetNode<Area2D>("SwordCollision");
+		screenColor = GetNode<CanvasModulate>("ScreenColor");
+		sword.Position = new Vector2(0,-10000);
+		ropeScene = ResourceLoader.Load<PackedScene>("grassRope.tscn");
+		ropeShoot = ResourceLoader.Load<PackedScene>("ropeSpawner.tscn");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -38,30 +61,43 @@ public partial class Player : CharacterBody2D
 		if(Input.IsActionPressed("left")!=Input.IsActionPressed("right") && !dashing){
 			if(Input.IsActionPressed("left")){
 				direction = -1;
+				if(!attacking){
+					mainSprite.FlipH = false;
+					partSprite.FlipH = false;
+					sword.Scale = new Vector2(-1,1);
+				}
+				
 			} else{
 				direction = 1;
+				if(!attacking){
+					mainSprite.FlipH = true;
+					partSprite.FlipH = true;
+					sword.Scale = new Vector2(1,1);
+				}
 			}
 			if(swinging){
-				Velocity = Velocity.Lerp(new Vector2(speed/10*direction,Velocity.Y), acceleration);
+				Velocity = Velocity.Lerp(new Vector2(swingSpeed/10*direction,Velocity.Y), acceleration);
 			} else{
-				Velocity = Velocity.Lerp(new Vector2(speed*direction,Velocity.Y), acceleration);
+				Velocity = Velocity.Lerp(new Vector2(swingSpeed*direction,Velocity.Y), acceleration);
 			}
 			
 		} else if(!dashing && !movementPaused){
 			Velocity = Velocity.Lerp(new Vector2(0,Velocity.Y), acceleration);
+		} else if(!dashing){
+			Velocity = Velocity.Lerp(new Vector2(Velocity.X/1.5f,Velocity.Y), acceleration);
 		}
 
 		if(!IsOnFloor()){
 			if(coyoteTime>0){
 				coyoteTime -=1;
 			}
-			if(Input.IsActionPressed("jump")&&jumping&&jumpTimer>0&&!dashing&&!movementPaused){
+			if(Input.IsActionPressed("jump")&&jumping&&jumpTimer>0&&!dashing&&!movementPaused&&!swinging){
 				Velocity = new Vector2(Velocity.X,Velocity.Y+Velocity.Y*(float)delta*(jumpTimer/jumpLength));
 			} else{
 				if(!dashing){
 					if(jumping&&!movementPaused){
 						jumping = false;
-						Velocity = new Vector2(Velocity.X,Velocity.Y/1.5f);
+						Velocity = new Vector2(Velocity.X,Velocity.Y/1.7f);
 					}
 
 					Velocity = new Vector2(Velocity.X,Velocity.Y+gravity*(float)delta);
@@ -118,17 +154,31 @@ public partial class Player : CharacterBody2D
 			if(movementPauseTimer<=0){
 				movementPaused = false;
 				acceleration = .2f;
+				currentRope.QueueFree();
 			}
 		}
 
-		if(Input.IsActionJustPressed("grapple")){
-			swinging = true;
-			jumping = false;
-			Velocity = Vector2.Zero;
-			swingTimer = .08f;
-			// shoot out thing but thats a later problem
-			swingPoint = GetNode<RigidBody2D>("../GrassRope/SwingPoint");
+		if(Input.IsActionJustPressed("grapple") && !swinging && !shotRope){
+			shotRope = true;
+			ropeSpawner ropeSpawn = ropeShoot.Instantiate<ropeSpawner>();
+			GetParent().AddChild(ropeSpawn);
+			ropeSpawn.GlobalPosition = GlobalPosition;
 		}
+		
+		if(Input.IsActionJustPressed("attack") && !attacking){
+			sword.Monitorable = true;
+			sword.Position = new Vector2(0,0);
+			mainSprite.Play("swing");
+			attacking = true;
+			attackTimer = .3f;
+		}
+		attackTimer -= (float)delta;
+		if(attackTimer<=0){
+			attacking = false;
+			sword.Monitorable = false;
+			sword.Position = new Vector2(0,-10000);
+		}
+		
 
 		if(swinging){
 			GlobalPosition = swingPoint.GlobalPosition;
@@ -140,8 +190,7 @@ public partial class Player : CharacterBody2D
 				swingPoint.LinearVelocity += newVelocity;
 				swingTimer = .08f;
 			}
-			swingTimer-=(float)delta;
-			if(Input.IsActionJustPressed("jump")){ // dismount
+			if(Input.IsActionJustPressed("jump") || (Input.IsActionJustPressed("grapple") && swingTimer != .081f)){ // dismount
 				swinging = false;
 				Velocity = new Vector2(swingPoint.LinearVelocity.X * 1.5f, swingPoint.LinearVelocity.Y * 1.17f);
 				movementPaused = true;
@@ -149,6 +198,7 @@ public partial class Player : CharacterBody2D
 				acceleration = .05f;
 				jumping = false;
 			}
+			swingTimer-=(float)delta;
 			coyoteTime = 0;
 		}
 		else{
@@ -162,5 +212,49 @@ public partial class Player : CharacterBody2D
 				((RigidBody2D) collision).ApplyCentralImpulse(-GetSlideCollision(i).GetNormal() * pushStrength);
 			}
 		} 
+
+		if(animation){
+			screenColor.Color = new Color(screenColor.Color.R-.01f, screenColor.Color.G+.01f, screenColor.Color.B+.01f); 
+			if(screenColor.Color.R <=1){
+				screenColor.Color = new Color(1,1,1);
+				animation = false;
+			}
+		}
+	}
+
+	public void animationFinish(){
+		mainSprite.Play("default");
+	}
+
+	public void takeDmg(int amount){
+		health -= amount;
+		screenColor.Color = new Color(2,0,0);
+		GD.Print(health);
+		animation = true;
+	}
+
+	public void ouch(Node2D mean){
+		if(mean.GetType() == typeof(shotShroom)){
+			takeDmg(25);
+			mean.QueueFree();
+		} else if(mean.GetParent().GetType() == typeof(shroom)){
+			takeDmg(25);
+		}
+	}
+
+	public void spawnRope(Vector2 pos, float rot){
+		GD.Print("spawn stuff");
+		swinging = true;
+		jumping = false;
+		Velocity = Vector2.Zero;
+		swingTimer = .081f;
+		grassRope rope = ropeScene.Instantiate<grassRope>();
+		GetParent().AddChild(rope);
+		rope.Position = pos;
+		rope.Rotation = rot;
+		currentRope = rope;
+		swingPoint = rope.GetNode<RigidBody2D>("SwingPoint");
+		shotRope = false;
+		
 	}
 }

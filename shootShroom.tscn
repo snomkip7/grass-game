@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3 uid="uid://h0srqtggqmuw"]
+
+[ext_resource type="Texture2D" uid="uid://csddia0407qed" path="res://orangeShroom.png" id="1_0mfvo"]
+[ext_resource type="Script" path="res://shotShroom.cs" id="1_d65gl"]
+[ext_resource type="Texture2D" uid="uid://2j1ok3reyfsf" path="res://redShroom.png" id="2_fly38"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_cjfnu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_0mfvo")
+}],
+"loop": true,
+"name": &"orange",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_fly38")
+}],
+"loop": true,
+"name": &"red",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6nv4e"]
+radius = 4.34614
+
+[node name="ShootShroom" type="CharacterBody2D"]
+scale = Vector2(3, 3)
+collision_layer = 32
+script = ExtResource("1_d65gl")
+
+[node name="ShotSprite" type="AnimatedSprite2D" parent="."]
+rotation = 1.5708
+sprite_frames = SubResource("SpriteFrames_cjfnu")
+animation = &"orange"
+
+[node name="ShotCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_6nv4e")

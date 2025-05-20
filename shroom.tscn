@@ -1,0 +1,97 @@
+[gd_scene load_steps=14 format=3 uid="uid://du5osuj8lpb36"]
+
+[ext_resource type="Texture2D" uid="uid://b83peiwludb4p" path="res://shroom_animated.png" id="1_4omco"]
+[ext_resource type="Script" path="res://shroom.cs" id="1_y25wt"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_olyeg"]
+atlas = ExtResource("1_4omco")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gs7fa"]
+atlas = ExtResource("1_4omco")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ifuly"]
+atlas = ExtResource("1_4omco")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g1ltb"]
+atlas = ExtResource("1_4omco")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0vdik"]
+atlas = ExtResource("1_4omco")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qqbbe"]
+atlas = ExtResource("1_4omco")
+region = Rect2(64, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uhs10"]
+atlas = ExtResource("1_4omco")
+region = Rect2(0, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qfa5q"]
+atlas = ExtResource("1_4omco")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_o8cra"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_olyeg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gs7fa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ifuly")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g1ltb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0vdik")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qqbbe")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uhs10")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qfa5q")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dx1pl"]
+radius = 40.0
+height = 98.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_byqy2"]
+radius = 40.0
+height = 98.0
+
+[node name="Shroom" type="CharacterBody2D"]
+collision_layer = 16
+script = ExtResource("1_y25wt")
+
+[node name="ShroomSprite" type="AnimatedSprite2D" parent="."]
+scale = Vector2(3, 3)
+sprite_frames = SubResource("SpriteFrames_o8cra")
+frame_progress = 0.977977
+
+[node name="ShroomCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_dx1pl")
+
+[node name="ShroomHitbox" type="Area2D" parent="."]
+collision_layer = 32
+collision_mask = 8
+
+[node name="HitboxCollision" type="CollisionShape2D" parent="ShroomHitbox"]
+shape = SubResource("CapsuleShape2D_byqy2")
+
+[connection signal="area_entered" from="ShroomHitbox" to="." method="hit"]

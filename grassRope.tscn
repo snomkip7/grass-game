@@ -1,7 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://cfbklw6qnbxcw"]
+[gd_scene load_steps=7 format=3 uid="uid://cfbklw6qnbxcw"]
 
+[ext_resource type="Script" path="res://grassRope.cs" id="1_h6724"]
 [ext_resource type="Texture2D" uid="uid://bo58kyeerbqst" path="res://icon.svg" id="1_rvv1n"]
 [ext_resource type="PackedScene" uid="uid://cjkl4oeujp1tb" path="res://grassRopeSegment.tscn" id="2_xkvjr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vj8v0"]
+size = Vector2(10, 10)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8hep3"]
 radius = 5.0
@@ -10,6 +14,13 @@ radius = 5.0
 radius = 46.0109
 
 [node name="GrassRope" type="Node2D"]
+script = ExtResource("1_h6724")
+
+[node name="ConnectorArea" type="Area2D" parent="."]
+collision_layer = 2
+
+[node name="ConnectorCollision" type="CollisionShape2D" parent="ConnectorArea"]
+shape = SubResource("RectangleShape2D_vj8v0")
 
 [node name="GrassRopeConnector" type="StaticBody2D" parent="."]
 
@@ -91,3 +102,5 @@ metadata/_edit_group_ = true
 
 [node name="SwingPointCollision" type="CollisionShape2D" parent="SwingPoint"]
 shape = SubResource("CircleShape2D_iq5dk")
+
+[connection signal="body_entered" from="ConnectorArea" to="." method="stop"]

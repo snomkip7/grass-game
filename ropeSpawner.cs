@@ -3,9 +3,9 @@ using System;
 
 public partial class ropeSpawner : Area2D
 {
-	private Vector2 velocity = new Vector2(800,0);
+	private Vector2 velocity = new Vector2(1000,0);
 	private bool doStuffs = false;
-	private float timerThing = .4f;
+	private float timerThing = .35f;
 	private bool thing = true;
 
 	public override void _Ready()
@@ -14,14 +14,13 @@ public partial class ropeSpawner : Area2D
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+	public override void _PhysicsProcess(double delta)
 	{
 		if(thing){
 			LookAt(GetGlobalMousePosition());
 			thing = false;
 		}
 		Position += (velocity*(float)delta).Rotated(Rotation);
-		GD.Print("velocity"+velocity);
 		if(doStuffs){
 			doStuff();
 		}

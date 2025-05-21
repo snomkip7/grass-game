@@ -68,19 +68,19 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dx1pl"]
-radius = 40.0
-height = 98.0
+radius = 51.0
+height = 130.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_byqy2"]
-radius = 40.0
-height = 98.0
+radius = 51.0
+height = 130.0
 
 [node name="Shroom" type="CharacterBody2D"]
 collision_layer = 16
 script = ExtResource("1_y25wt")
 
 [node name="ShroomSprite" type="AnimatedSprite2D" parent="."]
-scale = Vector2(3, 3)
+scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_o8cra")
 frame_progress = 0.977977
 

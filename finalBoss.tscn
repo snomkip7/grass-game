@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=3 uid="uid://dx24prbw88trj"]
+
+[ext_resource type="Texture2D" uid="uid://det28r8w4d7a8" path="res://grassBackground.png" id="1_5g7xo"]
+[ext_resource type="PackedScene" uid="uid://cbwn43jsfjo0t" path="res://player.tscn" id="2_wtwwx"]
+[ext_resource type="PackedScene" uid="uid://tlrhdugvtyum" path="res://dandelion.tscn" id="3_n8y4d"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cs0cy"]
+size = Vector2(3510, 180)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h7wgs"]
+size = Vector2(655, 1742)
+
+[node name="FinalBoss" type="Node2D"]
+
+[node name="Background2" type="Sprite2D" parent="."]
+position = Vector2(1178.25, 430.5)
+scale = Vector2(2.0675, 2.0675)
+texture = ExtResource("1_5g7xo")
+
+[node name="Background4" type="Sprite2D" parent="."]
+position = Vector2(2409.25, 426.5)
+scale = Vector2(2.0675, 2.0675)
+texture = ExtResource("1_5g7xo")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(-48.75, 436.5)
+scale = Vector2(2.0675, 2.0675)
+texture = ExtResource("1_5g7xo")
+
+[node name="Background3" type="Sprite2D" parent="."]
+position = Vector2(-1256.75, 435.5)
+scale = Vector2(2.0675, 2.0675)
+texture = ExtResource("1_5g7xo")
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(543, 748)
+
+[node name="GroundCollision" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("RectangleShape2D_cs0cy")
+
+[node name="Wall" type="StaticBody2D" parent="."]
+position = Vector2(-1290, 242)
+metadata/_edit_group_ = true
+
+[node name="WallCollision" type="CollisionShape2D" parent="Wall"]
+position = Vector2(99.5, 0)
+shape = SubResource("RectangleShape2D_h7wgs")
+
+[node name="Wall2" type="StaticBody2D" parent="."]
+position = Vector2(2451, 331)
+metadata/_edit_group_ = true
+
+[node name="WallCollision" type="CollisionShape2D" parent="Wall2"]
+position = Vector2(99.5, 0)
+shape = SubResource("RectangleShape2D_h7wgs")
+
+[node name="Player" parent="." instance=ExtResource("2_wtwwx")]
+position = Vector2(14, 473)
+
+[node name="Dandelion" parent="." instance=ExtResource("3_n8y4d")]
+position = Vector2(991, 520)

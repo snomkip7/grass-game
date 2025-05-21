@@ -27,7 +27,7 @@ animations = [{
 radius = 4.34614
 
 [node name="ShootShroom" type="CharacterBody2D"]
-scale = Vector2(3, 3)
+scale = Vector2(4, 4)
 collision_layer = 32
 script = ExtResource("1_d65gl")
 

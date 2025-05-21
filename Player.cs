@@ -154,11 +154,20 @@ public partial class Player : CharacterBody2D
 			if(movementPauseTimer<=0){
 				movementPaused = false;
 				acceleration = .2f;
-				currentRope.QueueFree();
+				if(currentRope!=null && IsInstanceValid(currentRope)){
+					currentRope.QueueFree();
+				}
 			}
 		}
 
 		if(Input.IsActionJustPressed("grapple") && !swinging && !shotRope){
+			if(movementPauseTimer>0){
+				movementPaused = false;
+				acceleration = .2f;
+				if(currentRope!=null && IsInstanceValid(currentRope)){
+					currentRope.QueueFree();
+				}
+			}
 			shotRope = true;
 			ropeSpawner ropeSpawn = ropeShoot.Instantiate<ropeSpawner>();
 			GetParent().AddChild(ropeSpawn);
@@ -231,6 +240,9 @@ public partial class Player : CharacterBody2D
 		screenColor.Color = new Color(2,0,0);
 		GD.Print(health);
 		animation = true;
+		if(health<=0){
+			CallDeferred("restart");
+		}
 	}
 
 	public void ouch(Node2D mean){
@@ -238,6 +250,10 @@ public partial class Player : CharacterBody2D
 			takeDmg(25);
 			mean.QueueFree();
 		} else if(mean.GetParent().GetType() == typeof(shroom)){
+			takeDmg(25);
+		} else if(mean.GetType() == typeof(dandelion)){
+			takeDmg(25);
+		} else if(mean.GetType() == typeof(DandelionSeed)){
 			takeDmg(25);
 		}
 	}
@@ -257,4 +273,13 @@ public partial class Player : CharacterBody2D
 		shotRope = false;
 		
 	}
+
+	public void restart(){
+		GetTree().ReloadCurrentScene();
+	}
+	
+	public void startGame(Node2D nodething){
+		GetTree().ChangeSceneToFile("finalBoss.tscn");
+	}
+	
 }

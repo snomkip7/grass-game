@@ -26,14 +26,14 @@ public partial class shroom : CharacterBody2D
 		shotTimer -= (float)delta;
 		if(shotTimer <= 0){
 			shotTimer = shotCooldown;
-			if(Mathf.Abs(player.Position.X-Position.X)< 800){
+			if (Mathf.Abs(player.Position.X - Position.X) < 800) {
 				shotShroom shot = shootShroom.Instantiate<shotShroom>();
-				if(targeted){
-					shot.Rotation = GetAngleTo(player.Position+new Vector2(player.Velocity.X, player.Velocity.Y/5));
+				if (targeted) {
+					shot.Rotation = GetAngleTo(player.Position + new Vector2(player.Velocity.X, player.Velocity.Y / 5));
 					shot.Velocity = new Vector2(shotSpeed, 0).Rotated(shot.Rotation);
 					shot.GetNode<AnimatedSprite2D>("ShotSprite").Play("orange");
 					AddChild(shot);
-				} else{
+				} else {
 					shot.Rotation = GetAngleTo(player.Position);
 					shot.Velocity = new Vector2(shotSpeed, 0).Rotated(shot.Rotation);
 					shot.GetNode<AnimatedSprite2D>("ShotSprite").Play("red");
